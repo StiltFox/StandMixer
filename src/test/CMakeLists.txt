@@ -6,10 +6,12 @@ if(NOT SFSkipTesting)
     add_executable(Tests
             HashTest.c++
             DataConverterTest.c++
+            ValidatorTest.c++
     )
     target_link_libraries(Tests
             GTest::gtest_main
             Hash
             DataConverter
+            Validator
     )
 endif()

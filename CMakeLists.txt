@@ -21,7 +21,7 @@ install(FILES
 )
 
 install(
-        TARGETS Hash DataConverter
+        TARGETS Hash DataConverter Validator
         EXPORT StandMixer
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/Stilt_Fox/StandMixer
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/Stilt_Fox/StandMixer
