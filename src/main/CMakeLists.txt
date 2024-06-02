@@ -1,3 +1,4 @@
 add_subdirectory(validator)
+add_subdirectory(data_processor)
 add_subdirectory(data_converter)
 add_subdirectory(hash)

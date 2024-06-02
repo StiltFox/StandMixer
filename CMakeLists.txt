@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(StandMixer VERSION 1.0.0)
+project(StandMixer VERSION 1.1.0)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -21,7 +21,7 @@ install(FILES
 )
 
 install(
-        TARGETS Hash DataConverter Validator
+        TARGETS Hash DataConverter Validator DataProcessor
         EXPORT StandMixer
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/Stilt_Fox/StandMixer
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/Stilt_Fox/StandMixer
