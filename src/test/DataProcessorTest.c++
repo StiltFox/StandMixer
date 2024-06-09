@@ -49,3 +49,17 @@ TEST(DataProcessor, tokenize_can_handle_multi_character_delimitors)
     vector<string> expected = {"This", "is", "using", "HTML", "spaces"};
     EXPECT_EQ(actual, expected);
 }
+
+TEST(DataProcessor, getUnion_will_return_the_union_of_two_sets)
+{
+    //given we have two sets with some overlap
+    unordered_set<string> set1 = {"a","b","c","d"};
+    unordered_set<string> set2 = {"a","2","b","1","5"};
+
+    //when we create a union of the sets
+    auto actual = DataProcessor::getUnion(set1, set2);
+
+    //then we get back the union of the sets
+    unordered_set<string> expected = {"a","2","b","1","5","c","d"};
+    EXPECT_EQ(actual,expected);
+}
