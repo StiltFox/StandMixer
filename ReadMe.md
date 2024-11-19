@@ -102,8 +102,8 @@ please notice that each module you want to link must be linked separately as sho
 modules. This allows you to include only what you need in your build.
 
 ## Tutorials and Examples
-If you want to see the classes of Stilt Fox&reg; Storage Shed, feel free to check out the [test folder](src/test). All public methods
-are thoroughly unit tested, and also demonstrate intended usage of the classes.
+If you want to see the classes of Stilt Fox&reg; Storage Shed in action, feel free to check out the [test folder](src/test). 
+All public methods are thoroughly unit tested, and also demonstrate intended usage of the classes.
 
 ## Helper Scripts
 Due to the complexity of compiling for multiple systems, a .sh file was created for each tested system to simply run the unit tests. If all prerequisites are installed, these scripts should run without error. They use relative paths so caution should be used when executing them. Be sure to execute them from the project root like so:\
