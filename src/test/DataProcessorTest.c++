@@ -14,10 +14,10 @@ using namespace StiltFox::StandMixer;
 TEST(DataProcessor, tokenize_will_return_a_vector_with_one_entry_containing_the_whole_data_if_deliminator_is_not_found)
 {
     //given we have a string with no deliminator in it
-    string data = "this string has no deliminators in it";
+    const string data = "this string has no deliminators in it";
 
     //when we tokenize the string
-    auto actual = DataProcessor::tokenize(data, ";");
+    const auto actual = DataProcessor::tokenize(data, ";");
 
     //then we get back a single element vector with the initial string
     vector<string> expected = {"this string has no deliminators in it"};
@@ -48,6 +48,21 @@ TEST(DataProcessor, tokenize_can_handle_multi_character_delimitors)
     //then we get back the tokenized vector
     vector<string> expected = {"This", "is", "using", "HTML", "spaces"};
     EXPECT_EQ(actual, expected);
+}
+
+TEST(DataProcessor, tokenize_will_empty_a_queue_if_that_is_used_for_input)
+{
+    //given we have a queue of characters with some delimiters
+    string data = "This&nbsp;is&nbsp;using&nbsp;HTML&nbsp;spaces";
+    queue dataQueue(deque(data.begin(), data.end()));
+
+    //when we tokenize the queue
+    auto actual = DataProcessor::tokenize(dataQueue, "&nbsp;");
+
+    //then we get back the tokenized vector and the queue is empty
+    vector<string> expected = {"This", "is", "using", "HTML", "spaces"};
+    EXPECT_EQ(actual, expected);
+    EXPECT_TRUE(dataQueue.empty());
 }
 
 TEST(DataProcessor, getUnion_will_return_the_union_of_two_sets)

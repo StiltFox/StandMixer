@@ -8,7 +8,8 @@ you use this library instead of the functions in Stilt Fox&reg; Universal Librar
 ## Legal Stuff
 Stilt Fox&reg; is not liable for any damages done to your hardware. For more information see LICENSE file.\
 Stilt Fox&reg; is trademarked. You may not use the Stilt Fox&reg; name, however this code is free to reference and use.\
-You may contribute to this library, however all contributions will share the same license as this library and you agree that Stilt Fox&reg; owns the copyright for any contributions.
+You may contribute to this library, however all contributions will share the same license as this library and you agree 
+that Stilt Fox&reg; owns the copyright for any contributions.
 
 ## Prerequisites
 - CMake

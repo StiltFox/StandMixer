@@ -8,19 +8,41 @@
 #include "DataProcessor.h++"
 
 using namespace std;
-using namespace StiltFox::StandMixer;
 
-vector<string> DataProcessor::tokenize(const string& data, const string& delim)
+namespace StiltFox::StandMixer
 {
-    vector<string> tokenizedVector;
-    size_t currentPosition = 0;
-
-    while (currentPosition!=string::npos)
+    vector<string> DataProcessor::tokenize(const string& data, const string& delim)
     {
-        size_t nextPosition = data.find(delim, currentPosition);
-        tokenizedVector.emplace_back(data.substr(currentPosition, nextPosition - currentPosition));
-        currentPosition = nextPosition == string::npos ? nextPosition : nextPosition + delim.size();
+        queue dataQueue(deque(data.begin(), data.end()));
+        return tokenize(dataQueue, delim);
     }
 
-    return tokenizedVector;
+    vector<string> DataProcessor::tokenize(queue<char>& data, const string& delim)
+    {
+        vector<string> tokenizedVector;
+
+        while (!data.empty()) tokenizedVector.push_back(parseToDelimiter(data, delim));
+
+        return tokenizedVector;
+    }
+
+    string DataProcessor::parseToDelimiter(const string& data, const string& delim)
+    {
+        queue dataQueue(deque(data.begin(), data.end()));
+        return parseToDelimiter(dataQueue, delim);
+    }
+
+    string DataProcessor::parseToDelimiter(queue<char>& data, const string& delim)
+    {
+        string output;
+
+        while (!data.empty() && !output.ends_with(delim))
+        {
+            output += data.front();
+            data.pop();
+        }
+        if (output.ends_with(delim)) output = output.substr(0, output.size() - delim.size());
+
+        return output;
+    }
 }
