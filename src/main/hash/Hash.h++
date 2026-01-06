@@ -23,7 +23,7 @@ namespace StiltFox::StandMixer::Hash
      * @Param data - a string containing the binary data that should be hashed.
      * @Return a hexadecimal string that represents the hash
      ******************************************************************************************************************/
-    std::string sha256(std::string data);
+    std::string sha256(const std::string& data);
     /*******************************************************************************************************************
      * This function will take any data and convert it into a sha512 hash. If you want to add a salt you must add
      * it yourself before passing it in. Note that a string is just a vector of char basically, so if you have numeric
@@ -32,7 +32,7 @@ namespace StiltFox::StandMixer::Hash
      * @Param data - a string containing the binary data that should be hashed.
      * @Return a hexadecimal string that represents the hash
      ******************************************************************************************************************/
-    std::string sha512(std::string data);
+    std::string sha512(const std::string& data);
     /*******************************************************************************************************************
      * This function will take any data and convert it into a md5 hash. If you want to add a salt you must add it
      * yourself before passing it in. Note that a string is just a vector of char basically, so if you have numeric
@@ -41,6 +41,6 @@ namespace StiltFox::StandMixer::Hash
      * @Param data - a string containing the binary data that should be hashed.
      * @Return a hexadecimal string that represents the hash
      ******************************************************************************************************************/
-    std::string md5(std::string data);
+    std::string md5(const std::string& data);
 }
 #endif

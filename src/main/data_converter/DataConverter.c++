@@ -22,7 +22,7 @@ string DataConverter::convertDataToHexString(const unsigned char* data, const un
     return output.str();
 }
 
-string DataConverter::convertDataToHexString(vector<unsigned char> data)
+string DataConverter::convertDataToHexString(const vector<unsigned char>& data)
 {
     return convertDataToHexString(data.data(), data.size());
 }
@@ -36,7 +36,25 @@ string DataConverter::convertDataToBinaryString(const unsigned char* data, const
     return output.str();
 }
 
-string DataConverter::convertDataToBinaryString(std::vector<unsigned char> data)
+std::string DataConverter::convertDataToBinaryString(const std::vector<uint32_t>& data)
+{
+    stringstream output;
+
+    for (const uint32_t word : data) output << bitset<32>(word);
+
+    return output.str();
+}
+
+std::string DataConverter::convertDataToHexString(const std::vector<uint32_t>& words)
+{
+    stringstream output;
+
+    for (const uint32_t word : words) output << hex << setw(8) << setfill('0') << word;
+
+    return output.str();
+}
+
+string DataConverter::convertDataToBinaryString(const std::vector<unsigned char>& data)
 {
     return convertDataToBinaryString(data.data(), data.size());
 }

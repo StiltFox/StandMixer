@@ -9,6 +9,7 @@
 #define StiltFox_STANDMIXER_SRC_MAIN_DATA_CONVERTER_DATACONVERTER_H
 #include <string>
 #include <vector>
+#include <cstdint>
 
 /***********************************************************************************************************************
  * This namespace contains methods meant for converting data from one format to another. Ex: a char array to a hex
@@ -32,7 +33,16 @@ namespace StiltFox::StandMixer::DataConverter
      * @Param data - This is the data to be translated.
      * @Return the hex string representation of the provided data.
      ******************************************************************************************************************/
-    std::string convertDataToHexString(std::vector<unsigned char> data);
+    std::string convertDataToHexString(const std::vector<unsigned char>& data);
+    /*******************************************************************************************************************
+    * Converts a C++ vector into a hexadecimal string.
+    * Note: this string will be lowercase.
+    *       this function accepts 32-bit integers instead of individual bytes
+    *
+    * @Param data - This is the data to be translated.
+    * @Return the hex string representation of the provided data.
+    ******************************************************************************************************************/
+    std::string convertDataToHexString(const std::vector<uint32_t>& data);
     /*******************************************************************************************************************
      * Converts a C based character array into a binary string.
      *
@@ -47,7 +57,14 @@ namespace StiltFox::StandMixer::DataConverter
      * @Param data - This is the data to be translated.
      * @Return The binary string representation of the provided data.
      ******************************************************************************************************************/
-    std::string convertDataToBinaryString(std::vector<unsigned char> data);
+    std::string convertDataToBinaryString(const std::vector<unsigned char>& data);
+    /*******************************************************************************************************************
+     * Converts a C++ vector into a hexadecimal string.
+     *
+     * @Param data - This is the data to be translated.
+     * @Return The binary string representation of the provided data.
+     ******************************************************************************************************************/
+    std::string convertDataToBinaryString(const std::vector<uint32_t>& data);
 
     /*******************************************************************************************************************
      * Converts a hexadecimal string to a vector of unsigned chars. This function will not throw an exception.

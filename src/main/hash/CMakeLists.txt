@@ -1,6 +1,6 @@
 add_library(Hash Hash.c++)
 target_link_libraries(Hash
-        cryptopp
+#        cryptopp
         DataConverter
 )
 set_target_properties(Hash PROPERTIES PUBLIC_HEADER "src/main/hash/Hash.h++")
