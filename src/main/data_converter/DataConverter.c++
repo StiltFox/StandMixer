@@ -45,11 +45,29 @@ std::string DataConverter::convertDataToBinaryString(const std::vector<uint32_t>
     return output.str();
 }
 
+std::string DataConverter::convertDataToBinaryString(const std::vector<uint64_t>& data)
+{
+    stringstream output;
+
+    for (const uint64_t word : data) output << bitset<64>(word);
+
+    return output.str();
+}
+
 std::string DataConverter::convertDataToHexString(const std::vector<uint32_t>& words)
 {
     stringstream output;
 
     for (const uint32_t word : words) output << hex << setw(8) << setfill('0') << word;
+
+    return output.str();
+}
+
+std::string DataConverter::convertDataToHexString(const std::vector<uint64_t>& words)
+{
+    stringstream output;
+
+    for (const uint64_t word : words) output << hex << setw(16) << setfill('0') << word;
 
     return output.str();
 }

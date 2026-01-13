@@ -35,14 +35,23 @@ namespace StiltFox::StandMixer::DataConverter
      ******************************************************************************************************************/
     std::string convertDataToHexString(const std::vector<unsigned char>& data);
     /*******************************************************************************************************************
-    * Converts a C++ vector into a hexadecimal string.
-    * Note: this string will be lowercase.
-    *       this function accepts 32-bit integers instead of individual bytes
-    *
-    * @Param data - This is the data to be translated.
-    * @Return the hex string representation of the provided data.
-    ******************************************************************************************************************/
+     * Converts a C++ vector into a hexadecimal string.
+     * Note: this string will be lowercase.
+     *       this function accepts 32-bit integers instead of individual bytes
+     *
+     * @Param data - This is the data to be translated.
+     * @Return the hex string representation of the provided data.
+     ******************************************************************************************************************/
     std::string convertDataToHexString(const std::vector<uint32_t>& data);
+    /*******************************************************************************************************************
+     * Converts a C++ vector into a hexadecimal string.
+     * Note: this string will be lowercase.
+     *       this function accepts 64-bit integers instead of individual bytes
+     *
+     * @Param data - This is the data to be translated.
+     * @Return the hex string representation of the provided data.
+     ******************************************************************************************************************/
+    std::string convertDataToHexString(const std::vector<uint64_t>& data);
     /*******************************************************************************************************************
      * Converts a C based character array into a binary string.
      *
@@ -52,19 +61,26 @@ namespace StiltFox::StandMixer::DataConverter
      ******************************************************************************************************************/
     std::string convertDataToBinaryString(const unsigned char* data, unsigned long length);
     /*******************************************************************************************************************
-     * Converts a C++ vector into a hexadecimal string.
+     * Converts a C++ vector into a binary string.
      *
      * @Param data - This is the data to be translated.
      * @Return The binary string representation of the provided data.
      ******************************************************************************************************************/
     std::string convertDataToBinaryString(const std::vector<unsigned char>& data);
     /*******************************************************************************************************************
-     * Converts a C++ vector into a hexadecimal string.
+     * Converts a C++ vector into a binary string.
      *
      * @Param data - This is the data to be translated.
      * @Return The binary string representation of the provided data.
      ******************************************************************************************************************/
     std::string convertDataToBinaryString(const std::vector<uint32_t>& data);
+    /*******************************************************************************************************************
+     * Converts a C++ vector into a binary string.
+     *
+     * @Param data - This is the data to be translated.
+     * @Return The binary string representation of the provided data.
+     ******************************************************************************************************************/
+    std::string convertDataToBinaryString(const std::vector<uint64_t>& data);
 
     /*******************************************************************************************************************
      * Converts a hexadecimal string to a vector of unsigned chars. This function will not throw an exception.
