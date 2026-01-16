@@ -8,10 +8,8 @@
 #define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
 #include "Hash.h++"
 #include "DataConverter.h++"
-#include <cryptopp/cryptlib.h>
 #include <cryptopp/sha.h>
 #include <cryptopp/md5.h>
-#include <sstream>
 #include <iomanip>
 
 using namespace std;
@@ -20,7 +18,6 @@ using namespace StiltFox::StandMixer;
 template<typename T>
 string encrypt(string data, T hasher)
 {
-//    stringstream output;
     CryptoPP::byte* digest;
 
     hasher.Update((const CryptoPP::byte*)data.c_str(),data.size());
@@ -28,7 +25,6 @@ string encrypt(string data, T hasher)
     hasher.Final(digest);
 
     string output = DataConverter::convertDataToHexString(digest, hasher.DigestSize());
-//    for (int i=0; i < hasher.DigestSize(); i++) output << hex << setw(2) << setfill('0') << (int)digest[i];
     delete[] digest;
 
     return output;
