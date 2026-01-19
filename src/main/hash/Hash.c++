@@ -297,7 +297,7 @@ void performOnBlock(const array<uint32_t, 16>& block, array<uint32_t, 4>& curren
     {
         uint32_t value = rotl(operation(currentHash[1], currentHash[2], currentHash[3]) + currentHash[0] +
             block[MD5_FEED_ORDER[x + (roundNumber * 16)]] + MD5_CONSTANTS[x + (roundNumber * 16)],
-            MD5_ROTATE[x + (roundNumber * 16)]);
+            MD5_ROTATE[x + (roundNumber * 16)]) + currentHash[1];
 
         currentHash[0] = currentHash[3];
         currentHash[3] = currentHash[2];
@@ -308,7 +308,7 @@ void performOnBlock(const array<uint32_t, 16>& block, array<uint32_t, 4>& curren
 
 uint32_t F(uint32_t a, uint32_t b, uint32_t c)
 {
-    return (a & b) | ((~b) & c);
+    return (a & b) | ((~a) & c);
 }
 
 uint32_t G(uint32_t a, uint32_t b, uint32_t c)

@@ -47,13 +47,15 @@ TEST(Hash, sha256_returns_the_hash_of_a_larger_string_that_requires_multiple_blo
 TEST(Hash, md5_returns_the_hash_of_the_data_passed_in)
 {
     //given we have a string to take the sha value of
-    string toHash = "SCP-049 would like to be let in on the festivities";
+    // string toHash = "SCP-049 would like to be let in on the festivities";
+    string toHash = "They are deterministic";
 
     //when we take the hash of the string
     string hash = Hash::md5(toHash);
 
     //then we get back the hash of the data
-    EXPECT_EQ(hash, "c93afd2d417699aa996c56e1842544ad");
+    // EXPECT_EQ(hash, "c93afd2d417699aa996c56e1842544ad");
+    EXPECT_EQ(hash, "23db6982caef9e9152f1a5b2589e6ca3");
 }
 
 TEST(Hash, sha512_returns_the_hash_of_the_data_passed_in)
