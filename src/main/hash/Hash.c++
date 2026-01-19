@@ -11,11 +11,40 @@
 #include <array>
 #include <queue>
 #include <iostream>
+#include <functional>
 #include <cstdint>
-#include <climits>
+#include <bit>
 
 using namespace std;
 using namespace StiltFox::StandMixer;
+
+constexpr array<uint32_t, 64> MD5_CONSTANTS =
+    {
+        0xD76AA478,0xE8C7B756,0x242070DB,0xC1BDCEEE,0xF57C0FA,0x4787C62A,0xA8304613,0xFD469501,0x698098D8,0x8B44F7AF,
+        0xFFFF5BB1,0x895CD7BE,0x6B901122,0xFD987193,0xA679438E,0x49B40821,0xF61E2562,0xC040B340,0x265E5A51,0xE9B6C7AA,
+        0xD62F105D,0x02441453,0xD8A1E681,0xE7D3FBC8,0x21E1CDE6,0xC33707D6,0xF4D50D87,0x455A14ED,0xA9E3E905,0xFCEFA3F8,
+        0x676F02D9,0x8D2A4C8A,0xFFFA3942,0x8771F681,0x699D6122,0xFDE5380C,0x4BEEA44,0x4BDECFA9,0xF6BB4B60,0xBEBFBC70,
+        0x289B7EC6,0xEAA127FA,0xD4EF3085,0x04881D05,0xD9D4D039,0xE6DB99E5,0x1FA27CF8,0xC4AC5665,0xF4292244,0x432AFF97,
+        0xAB9423A7,0xFC93A039,0x655B59C3,0x8F0CCC92,0xFFEFF47D,0x85845DD1,0x6FA87E4F,0xFE2CE6E0,0xA3014314,0x4E0811A1,
+        0xF7537E82,0xBD3AF235,0x2AD7D2BB,0xEB86D391
+    };
+
+constexpr array<unsigned char,64> MD5_ROTATE =
+    {
+        7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
+        5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
+        4, 11, 16, 13, 4, 11, 16, 13, 4, 11, 16, 13, 4, 11, 16, 13,
+        6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
+    };
+
+
+constexpr array<unsigned char, 64> MD5_FEED_ORDER =
+    {
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+        1, 6, 11, 0, 5, 10, 15, 4, 9, 14, 3, 8, 13, 2, 7, 12,
+        5, 8, 11, 14, 1, 4, 7, 10, 13, 0, 3, 6, 9, 12, 15, 2,
+        0, 7, 14, 5, 12, 3, 10, 1, 8, 15, 6, 13, 4, 11, 2, 9
+    };
 
 constexpr array<uint64_t, 8> DEFAULT_HASH_VALUES =
     {
@@ -72,15 +101,6 @@ T getNextWord(const string& bytes, size_t& index)
 }
 
 template <typename T>
-static T rotateRight (T n, unsigned int c)
-{
-    const unsigned int mask = (CHAR_BIT*sizeof(n) - 1);
-
-    c &= mask;
-    return (n>>c) | (n<<( (-c)&mask ));
-}
-
-template <typename T>
 T calculateNextLine(const vector<T>& currentMessageBlock)
 {
     T theta0, theta1;
@@ -91,13 +111,13 @@ T calculateNextLine(const vector<T>& currentMessageBlock)
 
     if (sizeof(T) < sizeof(uint64_t))
     {
-        theta0 = rotateRight(w1, 7) ^ rotateRight(w1, 18) ^ (w1 >> 3);
-        theta1 = rotateRight(w14, 17) ^ rotateRight(w14, 19) ^ (w14 >> 10);
+        theta0 = rotr(w1, 7) ^ rotr(w1, 18) ^ (w1 >> 3);
+        theta1 = rotr(w14, 17) ^ rotr(w14, 19) ^ (w14 >> 10);
     }
     else
     {
-        theta0 = rotateRight(w1, 1) ^ rotateRight(w1, 8) ^ (w1 >> 7);
-        theta1 = rotateRight(w14, 19) ^ rotateRight(w14, 61) ^ (w14 >> 6);
+        theta0 = rotr(w1, 1) ^ rotr(w1, 8) ^ (w1 >> 7);
+        theta1 = rotr(w14, 19) ^ rotr(w14, 61) ^ (w14 >> 6);
     }
 
     return w0 + theta0 + w9 + theta1;
@@ -125,17 +145,18 @@ void calculateWorkingVariables(T word, vector<T>& workingVariables, size_t& curr
     if (sizeof(T) < sizeof(uint64_t))
     {
         constant = getConstant32Bit(currentConstant);
-        sum0 = rotateRight(workingVariables[0], 2) ^ rotateRight(workingVariables[0], 13) ^
-            rotateRight(workingVariables[0], 22);
-        sum1 = rotateRight(workingVariables[4], 6) ^ rotateRight(workingVariables[4], 11) ^
-            rotateRight(workingVariables[4], 25);
+        sum0 = rotr(workingVariables[0], 2) ^ rotr(workingVariables[0], 13) ^
+            rotr(workingVariables[0], 22);
+        sum1 = rotr(workingVariables[4], 6) ^ rotr(workingVariables[4], 11) ^
+            rotr(workingVariables[4], 25);
     }
     else
     {
-        sum0 = rotateRight(workingVariables[0], 28) ^ rotateRight(workingVariables[0], 34) ^
-            rotateRight(workingVariables[0], 39);
-        sum1 = rotateRight(workingVariables[4], 14) ^ rotateRight(workingVariables[4], 18) ^
-            rotateRight(workingVariables[4], 41);
+        constant = CONSTANTS[currentConstant];
+        sum0 = rotr(workingVariables[0], 28) ^ rotr(workingVariables[0], 34) ^
+            rotr(workingVariables[0], 39);
+        sum1 = rotr(workingVariables[4], 14) ^ rotr(workingVariables[4], 18) ^
+            rotr(workingVariables[4], 41);
     }
 
     T majority = (workingVariables[0] & workingVariables[1]) ^ (workingVariables[0] & workingVariables[2]) ^
@@ -259,7 +280,7 @@ vector<T> calculateSha2(const string& input)
         calculateWorkingVariables(word, workingVariables, constantIndex);
         messageSchedule.emplace_back(word);
         if (messageSchedule.size() >= 16)
-            processMessageSchedule(messageSchedule, workingVariables, output, currentIndex, numberOfLoops);
+            processMessageSchedule(messageSchedule, workingVariables, output, constantIndex, numberOfLoops);
     }
 
     addPadding(input, messageSchedule, workingVariables, constantIndex);
@@ -267,6 +288,88 @@ vector<T> calculateSha2(const string& input)
     processMessageSchedule(messageSchedule, workingVariables, output, constantIndex, numberOfLoops);
 
     return output;
+}
+
+void performOnBlock(const array<uint32_t, 16>& block, array<uint32_t, 4>& currentHash, unsigned char roundNumber,
+    const function<uint32_t(uint32_t, uint32_t, uint32_t)>& operation)
+{
+    for (int x=0; x < block.size(); x++)
+    {
+        uint32_t value = rotl(operation(currentHash[1], currentHash[2], currentHash[3]) + currentHash[0] +
+            block[MD5_FEED_ORDER[x + (roundNumber * 16)]] + MD5_CONSTANTS[x + (roundNumber * 16)],
+            MD5_ROTATE[x + (roundNumber * 16)]);
+
+        currentHash[0] = currentHash[3];
+        currentHash[3] = currentHash[2];
+        currentHash[2] = currentHash[1];
+        currentHash[1] = value;
+    }
+}
+
+uint32_t F(uint32_t a, uint32_t b, uint32_t c)
+{
+    return (a & b) | ((~b) & c);
+}
+
+uint32_t G(uint32_t a, uint32_t b, uint32_t c)
+{
+    return (a & c) | (b & (~c));
+}
+
+
+uint32_t H(uint32_t a, uint32_t b, uint32_t c)
+{
+    return a ^ b ^ c;
+}
+
+uint32_t I(uint32_t a, uint32_t b, uint32_t c)
+{
+    return b ^ (a & (~c));
+}
+
+void performBlockCalculations(array<uint32_t, 16>& messageSection, array<uint32_t, 4>& currentHash)
+{
+    performOnBlock(messageSection, currentHash, 0, F);
+    performOnBlock(messageSection, currentHash, 1, G);
+    performOnBlock(messageSection, currentHash, 2, H);
+    performOnBlock(messageSection, currentHash, 3, I);
+
+    messageSection = {0};
+}
+
+vector<uint32_t> calculateMd5(const string& input)
+{
+    array<uint32_t, 4> hash  = {0x01234567, 0x89abcdef, 0xfedcba98, 0x76543210};
+    array<uint32_t, 16> messageSection = {0};
+    size_t currentIndex = 0, currentWord = 0;
+    uint64_t byteSize = input.size() * 8;
+
+    while (currentIndex < input.size())
+    {
+        while (currentWord < 16 && currentIndex < input.size())
+        {
+            messageSection[currentWord] = getNextWord<uint32_t>(input, currentIndex);
+            currentWord++;
+        }
+
+        if (currentWord == 16) performBlockCalculations(messageSection, hash);
+    }
+
+    if (currentWord < 14)
+    {
+        messageSection[14] = (byteSize & 0xffffffff00000000) >> 32;
+        messageSection[15] = (byteSize & 0x00000000ffffffff);
+        performBlockCalculations(messageSection, hash);
+    }
+    else
+    {
+        performBlockCalculations(messageSection, hash);
+        messageSection[14] = (byteSize & 0xffffffff00000000) >> 32;
+        messageSection[15] = (byteSize & 0x00000000ffffffff);
+        performBlockCalculations(messageSection, hash);
+    }
+
+    return vector<uint32_t>{hash.begin(), hash.end()};
 }
 
 string Hash::sha256(const string& data)
@@ -281,7 +384,8 @@ string Hash::sha512(const string& data)
     return DataConverter::convertDataToHexString(shaNumericValue);
 }
 
-// string Hash::md5(string data)
-// {
-//     return encrypt(data, CryptoPP::Weak1::MD5());
-// }
+string Hash::md5(const string& data)
+{
+    const auto md5NumericValue = calculateMd5(data);
+    return DataConverter::convertDataToHexString(md5NumericValue);
+}
