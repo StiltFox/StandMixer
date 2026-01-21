@@ -72,12 +72,12 @@ constexpr array<uint64_t, 80> CONSTANTS =
         0x431d67c49c100d4c, 0x4cc5d4becb3e42b6, 0x597f299cfc657e2a, 0x5fcb6fab3ad6faec, 0x6c44198c4a475817
     };
 
-uint32_t getDefaultHashValue32Bit(const int index)
+uint32_t getDefaultHashValue32Bit(const size_t index)
 {
     return DEFAULT_HASH_VALUES[index] >> 32;
 }
 
-uint32_t getConstant32Bit(const int index)
+uint32_t getConstant32Bit(const size_t index)
 {
     return CONSTANTS[index] >> 32;
 }
@@ -111,13 +111,13 @@ T calculateNextLine(const vector<T>& currentMessageBlock)
 
     if (sizeof(T) < sizeof(uint64_t))
     {
-        theta0 = rotr(w1, 7) ^ rotr(w1, 18) ^ (w1 >> 3);
-        theta1 = rotr(w14, 17) ^ rotr(w14, 19) ^ (w14 >> 10);
+        theta0 = rotr(w1, 7) ^ rotr(w1, 18) ^ w1 >> 3;
+        theta1 = rotr(w14, 17) ^ rotr(w14, 19) ^ w14 >> 10;
     }
     else
     {
-        theta0 = rotr(w1, 1) ^ rotr(w1, 8) ^ (w1 >> 7);
-        theta1 = rotr(w14, 19) ^ rotr(w14, 61) ^ (w14 >> 6);
+        theta0 = rotr(w1, 1) ^ rotr(w1, 8) ^ w1 >> 7;
+        theta1 = rotr(w14, 19) ^ rotr(w14, 61) ^ w14 >> 6;
     }
 
     return w0 + theta0 + w9 + theta1;
@@ -159,9 +159,9 @@ void calculateWorkingVariables(T word, vector<T>& workingVariables, size_t& curr
             rotr(workingVariables[4], 41);
     }
 
-    T majority = (workingVariables[0] & workingVariables[1]) ^ (workingVariables[0] & workingVariables[2]) ^
-        (workingVariables[1] & workingVariables[2]);
-    T choice = (workingVariables[4] & workingVariables[5]) ^ ((~workingVariables[4]) & workingVariables[6]);
+    T majority = workingVariables[0] & workingVariables[1] ^ workingVariables[0] & workingVariables[2] ^
+        workingVariables[1] & workingVariables[2];
+    T choice = workingVariables[4] & workingVariables[5] ^ ~workingVariables[4] & workingVariables[6];
     T temp2 = sum0 + majority;
     T temp1 = workingVariables[7] + sum1 + choice + word + constant;
 
@@ -170,7 +170,7 @@ void calculateWorkingVariables(T word, vector<T>& workingVariables, size_t& curr
 
 template <typename T>
 void processMessageSchedule(vector<T>& messageSchedule, vector<T>& workingVariables, vector<T>& output,
-    size_t& constantIndex, size_t numberOfLoops)
+    size_t& constantIndex, const size_t numberOfLoops)
 {
     do
     {
@@ -178,7 +178,7 @@ void processMessageSchedule(vector<T>& messageSchedule, vector<T>& workingVariab
         calculateWorkingVariables(nextLine, workingVariables, constantIndex);
         messageSchedule.erase(messageSchedule.begin());
         messageSchedule.emplace_back(nextLine);
-    } while (constantIndex < numberOfLoops); //64 or 80
+    } while (constantIndex < numberOfLoops);
 
     messageSchedule.clear();
 
@@ -230,19 +230,19 @@ void addPadding(const string& input, vector<T>& messageSchedule, vector<T>& work
 
     if (sizeof(T) == sizeof(uint64_t))
     {
-        if (padding = 128 - ((input.size() + 17) % 128); padding >= 128) padding = 0;
+        if (padding = 128 - (input.size() + 17) % 128; padding >= 128) padding = 0;
         padding = padding / 8;
     }
     else
     {
-        if (padding = 64 - ((input.size() + 9) % 64); padding >= 64) padding = 0;
+        if (padding = 64 - (input.size() + 9) % 64; padding >= 64) padding = 0;
         padding = padding / 4;
     }
 
     for (int x=0; x < padding; x++)
     {
-        calculateWorkingVariables((T)0, workingVariables, constantIndex);
-        messageSchedule.emplace_back((T)0);
+        calculateWorkingVariables(static_cast<T>(0), workingVariables, constantIndex);
+        messageSchedule.emplace_back(static_cast<T>(0));
     }
 }
 
@@ -251,16 +251,17 @@ void addMessageSize(uint64_t byteSize, vector<T>& workingVariables, vector<T>& m
 {
     if (sizeof(T) < sizeof(uint64_t))
     {
-        calculateWorkingVariables((T)(byteSize & 0xffffffff00000000) >> 32, workingVariables, constantIndex);
+        calculateWorkingVariables(static_cast<T>((byteSize & 0xffffffff00000000) >> 32), workingVariables,
+            constantIndex);
         messageSchedule.emplace_back((byteSize & 0xffffffff00000000) >> 32);
-        calculateWorkingVariables((T)byteSize & 0x00000000ffffffff, workingVariables, constantIndex);
+        calculateWorkingVariables(static_cast<T>(byteSize & 0x00000000ffffffff), workingVariables, constantIndex);
         messageSchedule.emplace_back(byteSize & 0x00000000ffffffff);
     }
     else
     {
-        calculateWorkingVariables((T)0, workingVariables, constantIndex);
+        calculateWorkingVariables(static_cast<T>(0), workingVariables, constantIndex);
         messageSchedule.emplace_back(0);
-        calculateWorkingVariables((T)byteSize, workingVariables, constantIndex);
+        calculateWorkingVariables(static_cast<T>(byteSize), workingVariables, constantIndex);
         messageSchedule.emplace_back(byteSize);
     }
 }
@@ -290,14 +291,14 @@ vector<T> calculateSha2(const string& input)
     return output;
 }
 
-void performOnBlock(const array<uint32_t, 16>& block, array<uint32_t, 4>& currentHash, unsigned char roundNumber,
+void performOnBlock(const array<uint32_t, 16>& block, array<uint32_t, 4>& currentHash, const unsigned char roundNumber,
     const function<uint32_t(uint32_t, uint32_t, uint32_t)>& operation)
 {
     for (int x=0; x < block.size(); x++)
     {
-        uint32_t value = rotl(operation(currentHash[1], currentHash[2], currentHash[3]) + currentHash[0] +
-            block[MD5_FEED_ORDER[x + (roundNumber * 16)]] + MD5_CONSTANTS[x + (roundNumber * 16)],
-            MD5_ROTATE[x + (roundNumber * 16)]) + currentHash[1];
+        const uint32_t value = rotl(operation(currentHash[1], currentHash[2], currentHash[3]) + currentHash[0] +
+            block[MD5_FEED_ORDER[x + roundNumber * 16]] + MD5_CONSTANTS[x + roundNumber * 16],
+            MD5_ROTATE[x + roundNumber * 16]) + currentHash[1];
 
         currentHash[0] = currentHash[3];
         currentHash[3] = currentHash[2];
@@ -306,23 +307,23 @@ void performOnBlock(const array<uint32_t, 16>& block, array<uint32_t, 4>& curren
     }
 }
 
-uint32_t F(uint32_t a, uint32_t b, uint32_t c)
+uint32_t F(const uint32_t a, const uint32_t b, const uint32_t c)
 {
     return (a & b) | ((~a) & c);
 }
 
-uint32_t G(uint32_t a, uint32_t b, uint32_t c)
+uint32_t G(const uint32_t a, const uint32_t b, const uint32_t c)
 {
     return (a & c) | (b & (~c));
 }
 
 
-uint32_t H(uint32_t a, uint32_t b, uint32_t c)
+uint32_t H(const uint32_t a, const uint32_t b, const uint32_t c)
 {
     return a ^ b ^ c;
 }
 
-uint32_t I(uint32_t a, uint32_t b, uint32_t c)
+uint32_t I(const uint32_t a, const uint32_t b, const uint32_t c)
 {
     return b ^ (a & (~c));
 }
